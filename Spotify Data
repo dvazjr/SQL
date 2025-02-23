@@ -44,3 +44,18 @@ FROM BIT_DB.spotifydata
 ORDER BY popularity desc
 LIMIT 10
 
+#Finding the avg popularity by artist and for every artist above a 90, show the name of the artist, and their average, and a title of top star in the next column labeled 'tag'. Practice using the Common Table Expression (CTE)
+WITH pop_avg AS (
+SELECT
+AVG(SpotData.popularity) AS average_popularity,
+SpotData.artist_name
+FROM SpotData
+GROUP BY SpotData.artist_name
+)
+
+SELECT artist_name
+,average_popularity
+,'Top Star' AS tag
+FROM pop_AVG
+WHERE average_popularity>=90;
+
