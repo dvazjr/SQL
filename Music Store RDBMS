@@ -1,0 +1,37 @@
+## This data is based on customer purchase information and music sales. Practicing all SQL methods learned thus far to include joins, logical operators, comparison operators, clauses, functions and calculations.
+
+##These are questions I made up myself regarding the data in the various related tables in the database:
+
+
+
+  #What were the 10 most popular artists among the customer purchases in order from most to least? Show the results, artist, and a column that states 'TRL's Most Wanted' as their status.
+  SELECT COUNT(invoice_items.TrackId) AS 'Purchases'
+  ,chinook.artists.Name AS 'Artist'
+  ,'TRLs Most Wanted' AS 'Status'
+  FROM chinook.tracks
+  INNER JOIN chinook.albums ON tracks.AlbumId = albums.AlbumId
+  INNER JOIN chinook.artists ON albums.ArtistId = artists.ArtistId
+  INNER JOIN chinook.invoice_items ON tracks.TrackId = invoice_items.TrackId
+  GROUP BY artists.ArtistId, artists.Name
+  ORDER BY COUNT(invoice_items.TrackId)desc
+  LIMIT 10;
+
+  #What was the most popular genre based on purchases? Show the genre, and purchase count.
+  SELECT COUNT(genre.Name) AS 'Top Genres'
+  FROM chinook.tracks
+  INNER JOIN chinook.genres ON tracks.GenreId = genres.GenreId
+  INNER JOIN chinook.albums ON tracks.AlbumId = albums.AlbumId
+  INNER JOIN chinook.artists ON albums.ArtistId = artists.ArtistId
+  INNER JOIN chinook.invoice_items ON tracks.TrackId = invoice_items.TrackId
+  GROUP BY genre.Name
+  ORDER BY COUNT(invoice_items.TrackId)desc;
+
+  SELECT 
+    genres.Name AS Genre, 
+    COUNT(invoice_items.TrackId) AS PurchaseCount
+  FROM chinook.tracks
+  INNER JOIN chinook.genres ON tracks.GenreId = genres.GenreId
+  INNER JOIN chinook.invoice_items ON tracks.TrackId = invoice_items.TrackId
+  GROUP BY genres.GenreId, genres.Name
+  ORDER BY PurchaseCount DESC
+  LIMIT 10;
