@@ -1,10 +1,10 @@
-## This data is based on customer purchase information and music sales. Practicing all SQL methods learned thus far to include joins, logical operators, comparison operators, clauses, functions and calculations.
+# This data is based on customer purchase information and music sales. Practicing all SQL methods learned thus far to include joins, logical operators, comparison operators, clauses, functions and calculations.
 
-##These are questions I made up myself regarding the data in the various related tables in the database:
+# These are questions I made up myself regarding the data in the various related tables in the database:
 
 
 
-  #What were the 10 most popular artists among the customer purchases in order from most to least? Show the results, artist, and a column that states 'TRL's Most Wanted' as their status.
+  # What were the 10 most popular artists among the customer purchases in order from most to least? Show the results, artist, and a column that states 'TRL's Most Wanted' as their status.
   SELECT COUNT(invoice_items.TrackId) AS 'Purchases'
   ,chinook.artists.Name AS 'Artist'
   ,'TRLs Most Wanted' AS 'Status'
@@ -16,7 +16,7 @@
   ORDER BY COUNT(invoice_items.TrackId)desc
   LIMIT 10;
 
-  #What was the most popular genre based on purchases? Show the genre, and purchase count.
+  # What was the most popular genre based on purchases? Show the genre, and purchase count.
   SELECT COUNT(genre.Name) AS 'Top Genres'
   FROM chinook.tracks
   INNER JOIN chinook.genres ON tracks.GenreId = genres.GenreId
@@ -35,3 +35,95 @@
   GROUP BY genres.GenreId, genres.Name
   ORDER BY PurchaseCount DESC
   LIMIT 10;
+
+#Here are some more queries to the data:
+
+  # Show Customers (their full names, customer ID, and country) who are not in the US. (Hint: != or <> can be used to say "is not equal to").
+SELECT FirstName
+,LastName
+,CustomerId
+,Country
+FROM chinook.customers
+WHERE country <> 'USA'
+;
+
+
+  # Show only the Customers from Brazil.
+SELECT FirstName
+,LastName
+,CustomerId
+,Country
+FROM chinook.customers
+WHERE country = 'Brazil'
+;
+
+
+  # Find the Invoices of customers who are from Brazil. The resulting table should show the customer's full name, Invoice ID, Date of the invoice, and billing country.
+SELECT FirstName
+,LastName
+,InvoiceId
+,InvoiceDate
+,BillingCountry
+FROM chinook.customers
+INNER JOIN chinook.invoices
+ON customers.CustomerId=invoices.InvoiceId
+WHERE BillingCountry='Brazil'
+;
+
+
+  # Show the Employees who are Sales Agents.
+SELECT FirstName
+,LastName
+,Title
+FROM chinook.employees
+WHERE Title LIKE'%Sales%'
+;
+
+  #  Find a unique/distinct list of billing countries from the Invoice table.
+SELECT Distinct BillingCountry
+FROM Invoices
+;
+
+
+  # Provide a query that shows the invoices associated with each sales agent. The resulting table should include the Sales Agent's full name.
+SELECT employees.FirstName
+,employees.LastName
+,invoiceId
+FROM chinook.employees
+JOIN chinook.customers
+ON employees.EmployeeId=customers.SupportRepId
+JOIN chinook.invoices
+ON customers.CustomerId=invoices.CustomerId
+WHERE employees.Title LIKE'%Sales%'
+;
+
+
+  # Show the Invoice Total, Customer name, Country, and Sales Agent name for all invoices and customers.
+SELECT invoices.Total
+,customers.FirstName
+,customers.LastName
+,customers.Country
+,employees.FirstName
+,employees.LastName
+FROM chinook.customers
+INNER JOIN chinook.invoices
+ON customers.CustomerId=Invoices.CustomerId
+INNER JOIN chinook.employees
+ON customers.SupportRepId=employees.EmployeeId
+;
+
+
+  # How many Invoices were there in 2009?
+SELECT COUNT(*) AS InvoiceCount_in_2009
+FROM chinook.invoices
+WHERE strftime('%Y', InvoiceDate) = '2009'
+;
+
+
+  # What are the total sales for 2009?
+SELECT SUM(Quantity) AS Sales_in_2009
+FROM invoice_items
+INNER JOIN chinook.invoices
+ON invoice_items.invoiceId=invoices.InvoiceId
+WHERE strftime('%Y', InvoiceDate) = '2009'
+;
