@@ -127,3 +127,72 @@ INNER JOIN chinook.invoices
 ON invoice_items.invoiceId=invoices.InvoiceId
 WHERE strftime('%Y', InvoiceDate) = '2009'
 ;
+
+
+
+  # Write a query that includes the purchased track name with each invoice line ID.
+SELECT invoice_items.invoiceLineId
+,tracks.Name
+FROM chinook.invoice_items
+INNER JOIN chinook.tracks
+ON invoice_items.TrackId=tracks.TrackId
+;
+
+
+  # Write a query that includes the purchased track name AND artist name with each invoice line ID.
+SELECT invoice_items.invoiceLineId
+,tracks.Name AS Track_Name
+,artists.Name AS Artist_Name
+FROM chinook.invoice_items
+INNER JOIN chinook.tracks
+ON invoice_items.TrackId=tracks.TrackId
+INNER JOIN chinook.albums
+ON tracks.AlbumId=albums.AlbumId
+INNER JOIN chinook.artists
+ON albums.ArtistId=artists.ArtistId
+;
+
+
+  # Provide a query that shows all the Tracks, and include the Album name, Media type, and Genre.
+SELECT distinct tracks.name
+,albums.Title
+,tracks.MediaTypeId
+,genres.Name AS Genre
+FROM chinook.tracks
+INNER JOIN chinook.albums
+ON tracks.AlbumId=albums.AlbumId
+INNER JOIN chinook.genres
+ON tracks.GenreId=genres.GenreId
+;
+
+  # Show the total sales made by each sales agent. Use Full Name using concatenation function
+SELECT employees.FirstName || ' ' || employees.LastName AS Sales_Agent
+, SUM(invoice_items.Quantity) AS Total_Items_Sold
+FROM chinook.invoice_items
+INNER JOIN chinook.invoices
+    ON invoice_items.InvoiceId = invoices.InvoiceId
+INNER JOIN chinook.customers
+    ON invoices.CustomerId = customers.CustomerId
+INNER JOIN chinook.employees
+    ON customers.SupportRepId = employees.EmployeeId
+WHERE employees.Title LIKE '%Sales%'
+GROUP BY employees.EmployeeId, employees.FirstName, employees.LastName
+ORDER BY Total_Items_Sold DESC;
+
+
+  # Which sales agent made the most dollars in sales in 2009?
+SELECT employees.FirstName || ' ' || employees.LastName AS Sales_Agent
+, SUM(invoice_items.Quantity * invoice_items.UnitPrice) AS Total_Amount_Sold
+FROM chinook.invoice_items
+INNER JOIN chinook.invoices
+    ON invoice_items.InvoiceId = invoices.InvoiceId
+INNER JOIN chinook.customers
+    ON invoices.CustomerId = customers.CustomerId
+INNER JOIN chinook.employees
+    ON customers.SupportRepId = employees.EmployeeId
+WHERE employees.Title LIKE '%Sales%'
+AND strftime('%Y', invoices.InvoiceDate) = '2009'
+GROUP BY employees.EmployeeId, employees.FirstName, employees.LastName
+ORDER BY Total_Amount_Sold DESC
+LIMIT 1;
+
